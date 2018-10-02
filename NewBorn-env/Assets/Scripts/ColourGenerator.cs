@@ -20,9 +20,13 @@ public class ColourGenerator
 
 	public void UpdateElevation(MinMax elevationMinMax, Vector3 position)
 	{
-		settings.planetMaterial.SetVector("_elevationMinMax", new Vector4(elevationMinMax.Min, elevationMinMax.Max));
-        //settings.planetMaterial.SetVector("_position", position);
-	}
+        //settings.planetMaterial.SetVector("_elevationMinMax", new Vector4(elevationMinMax.Min, elevationMinMax.Max));
+
+        // Testing with 0 to 10 value we can imagine a place where it would grow //
+        settings.planetMaterial.SetVector("_elevationMinMax", new Vector4(0f, 10f));
+        ///////////////////////////////////////////////////////////////////////////
+        settings.planetMaterial.SetVector("_position", position);
+    }
 
     public void UpdateColours()
     {
