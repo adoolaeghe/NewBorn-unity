@@ -22,3 +22,4 @@
 *.sln
 *.x86_64
 *.csproj
+*.ShaderGraph

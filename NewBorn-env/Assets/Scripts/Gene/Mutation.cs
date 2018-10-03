@@ -20,19 +20,27 @@ public class Mutation    {
     public Vector3 radius;
 
 
-    public Mutation(int partNum, int axisNum, float energy, List<Mutation> mutations)
+    public Mutation(bool newMutation, int axis, float energy, List<Mutation> mutations)
     {
-        resolution = 80;
+        resolution = 120;
         noiseLayersParams = new List<NoiseLayerParams>();
-        if(partNum == 0) {
+        if(newMutation) {
             //
             // TEMPORARY ONLY FIRST AXIS PART IS VALID
 			axisParts = new List<int>() { 1, 1, 1, 1, 1, 1 };
             //
             //
-            float radiusX = Random.Range(1f, 1f) * energy;
-            float radiusY = Random.Range(1f, 1f) * energy;
-            float radiusZ = Random.Range(1f, 1f) * energy;
+            float radiusX = 1f;
+            float radiusY = 1f;
+            float radiusZ = 1f;
+
+            if (axis == 1 || axis == 2){
+                radiusX = Random.Range(1f, 4f) * energy;
+            } else if(axis == 3 || axis == 4) {
+                radiusY = Random.Range(1f, 4f) * energy;
+            } else if(axis == 5 || axis == 6) {
+                radiusZ = Random.Range(1f, 4f) * energy;
+            }
 
 			radius = new Vector3(radiusX, radiusY, radiusZ);
 		
@@ -40,10 +48,11 @@ public class Mutation    {
 			highAngularXLimit = Random.Range(20f, 80f);
 			lowAngularXLimit = Random.Range(0f, 20f);
 
-			roughness = Random.Range(0.5f, 1.5f);
-        	baseRoughness = Random.Range(0.5f, 1.5f);
+            roughness = Random.Range(0.5f, 1.5f);
+            baseRoughness = Random.Range(0.5f, 1.5f);
         	strength = Random.Range(0.5f, 1.5f);
 
+            // LOOP OVER THE NUMBER OF NOISE LAYERS
             for (int i = 0; i < 6; i++)
             {
                 if (i == 0)
@@ -53,7 +62,7 @@ public class Mutation    {
                 else 
                 {
                     var nLParam = noiseLayersParams[i - 1];
-                    noiseLayersParams.Add(new NoiseLayerParams(calculateNLParams(nLParam.baseRoughness), calculateNLParams(nLParam.roughness), nLParam.persistence, nLParam.numLayers, calculateNLParams(nLParam.strength), false));
+                    noiseLayersParams.Add(new NoiseLayerParams(calculateNLParams(nLParam.baseRoughness), calculateNLParams(nLParam.roughness), nLParam.persistence, nLParam.numLayers, nLParam.strength, false));
                 }
             }
         }
@@ -76,7 +85,8 @@ public class Mutation    {
     }
 
     float calculateNLParams(float param) {
-        return param * (1.5f - param);
+        // DIVIDE FORMULA
+        return Mathf.Sin(param);
     }
 }
 
