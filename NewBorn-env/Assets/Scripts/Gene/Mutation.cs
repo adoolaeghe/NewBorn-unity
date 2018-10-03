@@ -20,11 +20,11 @@ public class Mutation    {
     public Vector3 radius;
 
 
-    public Mutation(bool newMutation, int axis, float energy, List<Mutation> mutations)
+    public Mutation(string mutationType, int partNb, int axis, float energy, List<Mutation> mutations)
     {
         resolution = 120;
         noiseLayersParams = new List<NoiseLayerParams>();
-        if(newMutation) {
+        if(mutationType == "base" || mutationType == "division") {
             //
             // TEMPORARY ONLY FIRST AXIS PART IS VALID
 			axisParts = new List<int>() { 1, 1, 1, 1, 1, 1 };
@@ -34,15 +34,16 @@ public class Mutation    {
             float radiusY = 1f;
             float radiusZ = 1f;
 
+            // DEFINE THE RADIUS ACCORDING TO THE AXIS
             if (axis == 1 || axis == 2){
-                radiusX = Random.Range(1f, 4f) * energy;
+                radiusX = Random.Range(1f, 4f);
             } else if(axis == 3 || axis == 4) {
-                radiusY = Random.Range(1f, 4f) * energy;
+                radiusY = Random.Range(1f, 4f);
             } else if(axis == 5 || axis == 6) {
-                radiusZ = Random.Range(1f, 4f) * energy;
+                radiusZ = Random.Range(1f, 4f);
             }
 
-			radius = new Vector3(radiusX, radiusY, radiusZ);
+			radius = new Vector3(radiusX, radiusY, radiusZ) * energy; ;
 		
 			angularYLimit = Random.Range(0f, 90f);
 			highAngularXLimit = Random.Range(20f, 80f);
@@ -70,17 +71,17 @@ public class Mutation    {
         {
             // EMPHASIS ON SYMETRY // 
             // DISTRIBUTION OF ENERGY // 
-            axisParts = mutations[0].axisParts;
-			angularYLimit = mutations[0].angularYLimit;
-			highAngularXLimit = mutations[0].highAngularXLimit;
-			lowAngularXLimit = mutations[0].lowAngularXLimit;
+            axisParts = mutations[partNb - 1].axisParts;
+			angularYLimit = mutations[partNb - 1].angularYLimit;
+			highAngularXLimit = mutations[partNb - 1].highAngularXLimit;
+			lowAngularXLimit = mutations[partNb - 1].lowAngularXLimit;
 			for (int i = 0; i < 6; i++)
 			{
                 var useFirstLayerAsMask = i == 0 ? true : false;
-                var noiseLayersParam = mutations[0].noiseLayersParams[i]; 
+                var noiseLayersParam = mutations[partNb - 1].noiseLayersParams[i]; 
 				noiseLayersParams.Add(new NoiseLayerParams(noiseLayersParam.baseRoughness,noiseLayersParam.roughness, noiseLayersParam.persistence, noiseLayersParam.numLayers, noiseLayersParam.strength, useFirstLayerAsMask));
 			}
-            radius = new Vector3(mutations[0].radius.x, mutations[0].radius.y, mutations[0].radius.z) * energy ;
+            radius = new Vector3(mutations[partNb - 1].radius.x, mutations[partNb - 1].radius.y, mutations[partNb - 1].radius.z);
         }
     }
 

@@ -45,7 +45,7 @@ public class Gene : MonoBehaviour
         mutations.Add(new List<Mutation>());
         energy[0].Add(1);
         axis[0].Add(6);
-        mutations[0].Add(new Mutation(true, axis[0][0], energy[0][0], mutations[0]));
+        mutations[0].Add(new Mutation("base", 0, axis[0][0], energy[0][0], mutations[0]));
         basePart(parts[0], mutations[0][0], shapes[0], partCoOrds[0], axis[0][0]);
 
         /// 2ND PART ///
@@ -57,7 +57,7 @@ public class Gene : MonoBehaviour
         mutations.Add(new List<Mutation>());
         energy[1].Add(1);
         axis[1].Add(5);
-        mutations[1].Add(new Mutation(false, axis[1][0], energy[1][0], mutations[0])); 
+        mutations[1].Add(new Mutation("follow", 1, axis[1][0], energy[1][0], mutations[0])); 
         basePart(parts[1], mutations[1][0], shapes[1], partCoOrds[1], axis[1][0]);
         initRotation(parts[1][0], partCoOrds[0][0], partCoOrds[1][0], axis[1][0]);
         initJoint(parts[1][0], parts[0][0], partCoOrds[1][0].verticeZMax, partCoOrds[1][0], mutations[1][0].angularYLimit, mutations[1][0].highAngularXLimit, mutations[1][0].lowAngularXLimit);
@@ -83,12 +83,12 @@ public class Gene : MonoBehaviour
                             if (divisionChance > (energy[y][i] / 1.5))
                             {
                                 // AXIS 3 AND 4
-                                mutations[y].Add(new Mutation(true, 3, 0.5f, mutations[y]));
+                                mutations[y].Add(new Mutation("division", i, 3, 0.5f, mutations[y]));
                                 newPart(parts[y], mutations[y][i], shapes[y], partCoOrds[y], 3, i, false);
                                 newDuplicatePart(energy, mutations, shapes, partCoOrds, 4, i, y);
                             } else {
                                 // AXIS 5 AND 6
-                                mutations[y].Add(new Mutation(true, 5, 0.5f, mutations[y]));
+                                mutations[y].Add(new Mutation("division", i, 5, 0.5f, mutations[y]));
                                 newPart(parts[y], mutations[y][i], shapes[y], partCoOrds[y], 5, i, false);
                                 newDuplicatePart(energy, mutations, shapes, partCoOrds, 6, i, y);
                             }
@@ -98,12 +98,12 @@ public class Gene : MonoBehaviour
                             if (divisionChance > (energy[y][i] / 1.5))
                             {
                                 // AXIS 5 AND 6
-                                mutations[y].Add(new Mutation(true, 5, 0.5f, mutations[y]));
+                                mutations[y].Add(new Mutation("division", i, 5, 0.5f, mutations[y]));
                                 newPart(parts[y], mutations[y][i], shapes[y], partCoOrds[y], 5, i, false);
                                 newDuplicatePart(energy, mutations, shapes, partCoOrds, 6, i, y);
                             } else {
                                 // AXIS 1 AND 2
-                                mutations[y].Add(new Mutation(true, 1, 0.5f, mutations[y]));
+                                mutations[y].Add(new Mutation("division", i, 1, 0.5f, mutations[y]));
                                 newPart(parts[y], mutations[y][i], shapes[y], partCoOrds[y], 1, i, false);
                                 newDuplicatePart(energy, mutations, shapes, partCoOrds, 2, i, y);
                             }
@@ -113,19 +113,19 @@ public class Gene : MonoBehaviour
                             if (divisionChance > energy[y][i] / 1.5)
                             {
                                 // AXIS 1 AND 2
-                                mutations[y].Add(new Mutation(true, 1, 0.5f, mutations[y]));
+                                mutations[y].Add(new Mutation("division", i, 1, 0.5f, mutations[y]));
                                 newPart(parts[y], mutations[y][i], shapes[y], partCoOrds[y], 1, i, false);
                                 newDuplicatePart(energy, mutations, shapes, partCoOrds, 2, i, y);
                             } else {
                                 // AXIS 3 AND 4
-                                mutations[y].Add(new Mutation(true, 3, 0.5f, mutations[y]));
+                                mutations[y].Add(new Mutation("division", i, 3, 0.5f, mutations[y]));
                                 newPart(parts[y], mutations[y][i], shapes[y], partCoOrds[y], 3, i, false);
                                 newDuplicatePart(energy, mutations, shapes, partCoOrds, 4, i, y);
                             }
                             break;
                     }
                 } else {
-                    mutations[y].Add(new Mutation(false, axis[y][i - 1], energy[y][i], mutations[y]));
+                    mutations[y].Add(new Mutation("follow", i, axis[y][i - 1], energy[y][i], mutations[y]));
                     axis[y].Add(axis[y][i - 1]);
                     newPart(parts[y], mutations[y][i], shapes[y], partCoOrds[y], axis[y][i], i, false);
                 }
@@ -179,7 +179,14 @@ public class Gene : MonoBehaviour
         partCoOrds.Add(new PartCoOrd(parts[i], shapes[i], new Vector3(0f, 0f, 0f), axis));
 
         //////////////////////////// NEW ROTATION WITH PROC COORD///////////////////////////////
-        initRotation(parts[i], partCoOrds[i - 1], partCoOrds[i], axis);
+        if (divided)
+        {
+            initRotation(parts[i], partCoOrds[i - 2], partCoOrds[i], axis);
+        }
+        else
+        {
+            initRotation(parts[i], partCoOrds[i - 1], partCoOrds[i], axis);
+        }
 
         // Init Configurable Joint
         //////////////////
@@ -245,17 +252,17 @@ public class Gene : MonoBehaviour
     {
         // adjust rotation according to a axis
         if(axis == 1) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x + (coOrdA.verticeXMaxB.x - (coOrdB.verticeXMax.x / 1.4f)), part.transform.localPosition.y, part.transform.localPosition.z);    
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x + coOrdA.verticeXMaxB.x - coOrdB.verticeXMax.x, part.transform.localPosition.y, part.transform.localPosition.z);    
         } else if (axis == 2) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x + (coOrdB.verticeXMax.x - (coOrdA.verticeXMaxB.x / 1.4f)), part.transform.localPosition.y, part.transform.localPosition.z); 
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x + coOrdB.verticeXMax.x + coOrdA.verticeXMax.x, part.transform.localPosition.y, part.transform.localPosition.z); 
         } else if (axis == 3) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y + (coOrdA.verticeYMaxB.y - (coOrdB.verticeYMax.y / 1.4f)), part.transform.localPosition.z);
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y + coOrdA.verticeYMaxB.y - coOrdB.verticeYMax.y, part.transform.localPosition.z);
 		} else if (axis == 4) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y + (coOrdB.verticeYMax.y - (coOrdA.verticeYMaxB.y / 1.4f)), part.transform.localPosition.z);
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y + coOrdB.verticeYMax.y + coOrdA.verticeYMax.y, part.transform.localPosition.z);
 		} else if (axis == 5) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y, part.transform.localPosition.z + (coOrdA.verticeZMaxB.z - (coOrdB.verticeZMax.z / 1.4f)));
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y, part.transform.localPosition.z + coOrdA.verticeZMaxB.z - coOrdB.verticeZMax.z);
 		} else if (axis == 6) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y, part.transform.localPosition.z + (coOrdB.verticeZMax.z - (coOrdA.verticeZMaxB.z / 1.4f)));
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y, part.transform.localPosition.z + coOrdB.verticeZMax.z + coOrdA.verticeZMax.z);
         }
 	}
 
@@ -321,7 +328,7 @@ public class Gene : MonoBehaviour
     {
         int z = i + 1;
         energy[y].Add(0.5f);
-        mutations[y].Add(new Mutation(true, axis, energy[y][z], mutations[y]));
+        mutations[y].Add(new Mutation("follow", z, axis, energy[y][z], mutations[y]));
         newPart(parts[y], mutations[y][z], shapes[y], partCoOrds[y], axis, z, true);
     }
 
