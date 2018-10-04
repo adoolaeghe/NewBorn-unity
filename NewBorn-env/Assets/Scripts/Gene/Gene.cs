@@ -229,9 +229,7 @@ public class Gene : MonoBehaviour
                 initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeZMaxB, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
             }
         }
-        //////////////////
-		// Init Joint Mesh
-        //initJointObject(parts[i], partCoOrds[i].verticeAxisMax, mutation.strength);
+
 		// New collider 
 		initCollider(parts[i]);
         // Add Collider in the same layer group.
@@ -296,15 +294,6 @@ public class Gene : MonoBehaviour
         cj.highAngularXLimit = new SoftJointLimit() { limit = highAngularXLimit, bounciness = 1f };
         cj.lowAngularXLimit = new SoftJointLimit() { limit = lowAngularXlimit, bounciness = 1f };
         part.gameObject.GetComponent<Rigidbody>().useGravity = true;
-	}
-
-    private void initJointObject(GameObject part, Vector3 maxPosition, float strength)
-	{
-        GameObject jointPart = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-		jointPart.transform.parent = part.transform;
-        jointPart.transform.localPosition = maxPosition;
-        // Size the joint object according to the size of the designated object
-        jointPart.transform.localScale = jointPart.transform.localScale * 16f;
 	}
 
 	private void initCollider(GameObject part)
