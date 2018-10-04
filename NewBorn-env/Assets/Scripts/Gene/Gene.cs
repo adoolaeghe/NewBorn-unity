@@ -61,6 +61,8 @@ public class Gene : MonoBehaviour
         basePart(parts[1], mutations[1][0], shapes[1], partCoOrds[1], axis[1][0]);
         initRotation(parts[1][0], partCoOrds[0][0], partCoOrds[1][0], axis[1][0]);
         initJoint(parts[1][0], parts[0][0], partCoOrds[1][0].verticeZMax, partCoOrds[1][0], mutations[1][0].angularYLimit, mutations[1][0].highAngularXLimit, mutations[1][0].lowAngularXLimit);
+
+      
         //////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -142,9 +144,9 @@ public class Gene : MonoBehaviour
 	{
 		/////////////////////////////// INIT FIRST BODY PART///////////////////////////////////
 		parts.Add(new GameObject());
-		parts[0].transform.parent = transform;
+        parts[0].transform.parent = transform;
 
-		////////////////////////////////// NEW PROC SHAPE //////////////////////////////////////
+        ////////////////////////////////// NEW PROC SHAPE //////////////////////////////////////
         shapes.Add(initProcShape(parts[0], mutation.resolution, mutation.radius, mutation.noiseLayersParams));
 
 		/////////////////////////////// GET PROC SHAPE COORD ///////////////////////////////////
@@ -222,11 +224,6 @@ public class Gene : MonoBehaviour
 		initCollider(parts[i]);
         // Add Collider in the same layer group.
         parts[i].layer = 8;
-        // Define symetry for the second part with the first.
-		if (i == 1)
-		{
-			parts[i].transform.localScale += new Vector3(-2f, 0f, 0f);
-		}
 	}
 
     private ProcShape initProcShape(GameObject part, int resolution, Vector3 radius, List<NoiseLayerParams>  noiseLayersParams)
@@ -252,17 +249,17 @@ public class Gene : MonoBehaviour
     {
         // adjust rotation according to a axis
         if(axis == 1) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x + coOrdA.verticeXMaxB.x - coOrdB.verticeXMax.x, part.transform.localPosition.y, part.transform.localPosition.z);    
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x + ((coOrdA.verticeXMaxB.x - coOrdB.verticeXMax.x)/2), part.transform.localPosition.y, part.transform.localPosition.z);    
         } else if (axis == 2) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x + coOrdB.verticeXMax.x + coOrdA.verticeXMax.x, part.transform.localPosition.y, part.transform.localPosition.z); 
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x + ((coOrdB.verticeXMax.x - coOrdA.verticeXMaxB.x) / 2), part.transform.localPosition.y, part.transform.localPosition.z); 
         } else if (axis == 3) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y + coOrdA.verticeYMaxB.y - coOrdB.verticeYMax.y, part.transform.localPosition.z);
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y + ((coOrdA.verticeYMaxB.y - coOrdB.verticeYMax.y) / 2), part.transform.localPosition.z);
 		} else if (axis == 4) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y + coOrdB.verticeYMax.y + coOrdA.verticeYMax.y, part.transform.localPosition.z);
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y + ((coOrdB.verticeYMax.y - coOrdA.verticeYMaxB.y) / 2), part.transform.localPosition.z);
 		} else if (axis == 5) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y, part.transform.localPosition.z + coOrdA.verticeZMaxB.z - coOrdB.verticeZMax.z);
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y, part.transform.localPosition.z + ((coOrdA.verticeZMaxB.z - coOrdB.verticeZMax.z) / 2));
 		} else if (axis == 6) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y, part.transform.localPosition.z + coOrdB.verticeZMax.z + coOrdA.verticeZMax.z);
+            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y, part.transform.localPosition.z + ((coOrdB.verticeZMax.z - coOrdA.verticeZMaxB.z) / 2));
         }
 	}
 
@@ -330,6 +327,15 @@ public class Gene : MonoBehaviour
         energy[y].Add(0.5f);
         mutations[y].Add(new Mutation("follow", z, axis, energy[y][z], mutations[y]));
         newPart(parts[y], mutations[y][z], shapes[y], partCoOrds[y], axis, z, true);
+
+        // ADD PARALLELISM ACCORDING TO THE AXIS
+        if(axis == 1 || axis == 2) {
+            parts[y][i].transform.localScale += new Vector3(-2f, 0f, 0f);
+        } else if (axis == 3 || axis == 4) {
+            parts[y][i].transform.localScale += new Vector3(0f, -2f, 0f);
+        } else {
+            parts[y][i].transform.localScale += new Vector3(0f, 0f, -2f);
+        }
     }
 
     public struct PartCoOrd
