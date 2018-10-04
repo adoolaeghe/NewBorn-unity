@@ -11,6 +11,6 @@ public class ColourSettings {
     public ColourSettings() 
     {
         gradient = new Gradient();
-        planetMaterial = new Material(Shader.Find("Standard"));     
+        planetMaterial = new Material(Shader.Find("Planet"));     
     }
 }
