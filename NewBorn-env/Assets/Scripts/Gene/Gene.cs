@@ -195,19 +195,27 @@ public class Gene : MonoBehaviour
         //// TEMPORARY ///
         if (axis == 1)
         {
-            initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeXMax, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
+            initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeXMaxB, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
         }
         else if (axis == 2)
         {
-            initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeXMaxB, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
+            if(divided){
+                initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeXMaxB, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
+            } else {
+                initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeXMax, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
+            }
         }
         else if (axis == 3)
         {
-            initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeYMax, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
+            initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeYMaxB, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
         }
         else if (axis == 4)
         {
-            initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeYMaxB, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
+            if(divided) {
+                initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeYMaxB, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
+            } else {
+                initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeYMax, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
+            }
         }
         else if (axis == 5)
         {
@@ -215,7 +223,11 @@ public class Gene : MonoBehaviour
         }
         else if (axis == 6)
         {
-            initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeZMaxB, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
+            if(divided){
+                initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeZMaxB, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
+            } else {
+                initJoint(parts[i], parts[i - 1], partCoOrds[i].verticeZMaxB, partCoOrds[i], mutation.angularYLimit, mutation.highAngularXLimit, mutation.lowAngularXLimit);
+            }
         }
         //////////////////
 		// Init Joint Mesh
