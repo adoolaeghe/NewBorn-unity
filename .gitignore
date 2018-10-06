@@ -16,11 +16,19 @@
 /NewBorn-env/Assets/SharedAssets
 /NewBorn-env/Assets/TFModels
 /NewBorn-env/Assets/UnityPackages
+/NewBorn-env/Assets/Quixel
 
 *.meta
 *.asset
 *.sln
 *.x86_64
 *.csproj
+*.png
+*.jpeg
 *.mat
 *.ShaderGraph
+*.ShaderSubGraph
+*.ShaderGraph
+*.ShaderGraph
+*.mat
+*.shader

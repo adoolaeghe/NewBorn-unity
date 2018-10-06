@@ -22,7 +22,7 @@ public class Mutation    {
 
     public Mutation(string mutationType, int partNb, int axis, float energy, List<Mutation> mutations)
     {
-        resolution = 120;
+        resolution = 10;
         noiseLayersParams = new List<NoiseLayerParams>();
         if(mutationType == "base" || mutationType == "division") {
             //
@@ -45,12 +45,12 @@ public class Mutation    {
 
 			radius = new Vector3(radiusX, radiusY, radiusZ) * energy; ;
 		
-			angularYLimit = Random.Range(0f, 90f);
-			highAngularXLimit = Random.Range(20f, 80f);
+			angularYLimit = Random.Range(0f, 30f);
+			highAngularXLimit = Random.Range(10f, 20f);
 			lowAngularXLimit = Random.Range(0f, 20f);
 
-            roughness = Random.Range(0.5f, 1.5f);
-            baseRoughness = Random.Range(0.5f, 1.5f);
+            roughness = Random.Range(0.5f, 1f);
+            baseRoughness = Random.Range(0.5f, 4f);
         	strength = Random.Range(0.5f, 1.5f);
 
             // LOOP OVER THE NUMBER OF NOISE LAYERS
