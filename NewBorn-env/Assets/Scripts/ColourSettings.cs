@@ -6,11 +6,12 @@ using UnityEngine;
 public class ColourSettings {
 
     public Gradient gradient;
+    GradientColorKey[] gck;
+    GradientAlphaKey[] gak;
     public Material planetMaterial;
 
     public ColourSettings() 
     {
-        gradient = new Gradient();
-        planetMaterial = new Material(Shader.Find("Planet"));     
+        planetMaterial = Resources.Load<Material>("Materials/Test");
     }
 }

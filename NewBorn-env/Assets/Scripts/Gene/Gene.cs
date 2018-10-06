@@ -144,6 +144,8 @@ public class Gene : MonoBehaviour
 	{
 		/////////////////////////////// INIT FIRST BODY PART///////////////////////////////////
 		parts.Add(new GameObject());
+        // Add Collider in the same layer group.
+        parts[0].layer = 8;
         parts[0].transform.parent = transform;
 
         ////////////////////////////////// NEW PROC SHAPE //////////////////////////////////////
@@ -160,8 +162,7 @@ public class Gene : MonoBehaviour
         Rigidbody rigidBody = parts[0].gameObject.AddComponent<Rigidbody>();
 		// New collider 
 		initCollider(parts[0]);
-		// Add Collider in the same layer group.
-		parts[0].layer = 8;
+
 	}
 
 	private void newPart(List<GameObject> parts, Mutation mutation, List<ProcShape> shapes, List<PartCoOrd> partCoOrds, int axis, int i, bool divided)
@@ -173,6 +174,8 @@ public class Gene : MonoBehaviour
         } else {
             parts[i].transform.parent = parts[i - 1].transform;
         }
+        // Add Collider in the same layer group.
+        parts[i].layer = 8;
 
         ////////////////////////////////// NEW PROC SHAPE //////////////////////////////////////
         shapes.Add(initProcShape(parts[i], mutation.resolution, mutation.radius, mutation.noiseLayersParams));
@@ -180,7 +183,7 @@ public class Gene : MonoBehaviour
         /////////////////////////////// GET PROC SHAPE COORD ///////////////////////////////////
         partCoOrds.Add(new PartCoOrd(parts[i], shapes[i], new Vector3(0f, 0f, 0f), axis));
 
-        //////////////////////////// NEW ROTATION WITH PROC COORD///////////////////////////////
+        //////////////////////////// NEW ROTATION WITH PROC COORD/s//////////////////////////////
         if (divided)
         {
             initRotation(parts[i], partCoOrds[i - 2], partCoOrds[i], axis);
@@ -232,8 +235,6 @@ public class Gene : MonoBehaviour
 
 		// New collider 
 		initCollider(parts[i]);
-        // Add Collider in the same layer group.
-        parts[i].layer = 8;
 	}
 
     private ProcShape initProcShape(GameObject part, int resolution, Vector3 radius, List<NoiseLayerParams>  noiseLayersParams)
@@ -259,17 +260,17 @@ public class Gene : MonoBehaviour
     {
         // adjust rotation according to a axis
         if(axis == 1) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x + ((coOrdA.verticeXMaxB.x - coOrdB.verticeXMax.x)/2), part.transform.localPosition.y, part.transform.localPosition.z);    
+            part.transform.localPosition = new Vector3(0f + ((coOrdA.verticeXMaxB.x - coOrdB.verticeXMax.x)/ 1.3f), 0f, 0f);    
         } else if (axis == 2) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x + ((coOrdB.verticeXMax.x - coOrdA.verticeXMaxB.x) / 2), part.transform.localPosition.y, part.transform.localPosition.z); 
+            part.transform.localPosition = new Vector3(0f + ((coOrdB.verticeXMax.x - coOrdA.verticeXMaxB.x) / 1.3f), 0f, 0f); 
         } else if (axis == 3) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y + ((coOrdA.verticeYMaxB.y - coOrdB.verticeYMax.y) / 2), part.transform.localPosition.z);
+            part.transform.localPosition = new Vector3(0f, 0f + ((coOrdA.verticeYMaxB.y - coOrdB.verticeYMax.y) / 1.3f), 0f);
 		} else if (axis == 4) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y + ((coOrdB.verticeYMax.y - coOrdA.verticeYMaxB.y) / 2), part.transform.localPosition.z);
+            part.transform.localPosition = new Vector3(0f, 0f + ((coOrdB.verticeYMax.y - coOrdA.verticeYMaxB.y) / 1.3f), 0f);
 		} else if (axis == 5) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y, part.transform.localPosition.z + ((coOrdA.verticeZMaxB.z - coOrdB.verticeZMax.z) / 2));
+            part.transform.localPosition = new Vector3(0f, 0f, 0f + ((coOrdA.verticeZMaxB.z - coOrdB.verticeZMax.z) / 1.3f));
 		} else if (axis == 6) {
-            part.transform.localPosition = new Vector3(part.transform.localPosition.x, part.transform.localPosition.y, part.transform.localPosition.z + ((coOrdB.verticeZMax.z - coOrdA.verticeZMaxB.z) / 2));
+            part.transform.localPosition = new Vector3(0f, 0f, 0f + ((coOrdB.verticeZMax.z - coOrdA.verticeZMaxB.z) / 1.3f));
         }
 	}
 
@@ -283,16 +284,17 @@ public class Gene : MonoBehaviour
 		// Configurable Joint Angular Mortion
 		cj.angularXMotion = ConfigurableJointMotion.Limited;
         cj.angularYMotion = ConfigurableJointMotion.Limited;
-        cj.angularZMotion = ConfigurableJointMotion.Limited;
+        cj.angularZMotion = ConfigurableJointMotion.Locked;
 		// Configurable Joint Connected Body AND Anchor settings
 		cj.connectedBody = connectedBody.gameObject.GetComponent<Rigidbody>();
         cj.rotationDriveMode = RotationDriveMode.Slerp;
         cj.anchor = jointAnchor;
         cj.axis = partCoOrd.jointAxis;
 		// Configurable Joint Angular Limit
+        // Important to have 0 of bounciness
         cj.angularYLimit = new SoftJointLimit() { limit = angularYLimit, bounciness = 0f };
-        cj.highAngularXLimit = new SoftJointLimit() { limit = highAngularXLimit, bounciness = 1f };
-        cj.lowAngularXLimit = new SoftJointLimit() { limit = lowAngularXlimit, bounciness = 1f };
+        cj.highAngularXLimit = new SoftJointLimit() { limit = highAngularXLimit, bounciness = 0f };
+        cj.lowAngularXLimit = new SoftJointLimit() { limit = lowAngularXlimit, bounciness = 0f };
         part.gameObject.GetComponent<Rigidbody>().useGravity = true;
 	}
 
