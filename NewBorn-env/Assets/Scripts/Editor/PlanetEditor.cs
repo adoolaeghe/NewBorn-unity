@@ -26,7 +26,7 @@ public class NewBehaviourScript : Editor {
    //     }
 
    //     DrawSettingsShapeEditor(procShape.shapeSettings, procShape.OnShapeSettingsUpdated, ref procShape.shapeSettingsFoldout, ref shapeEditor);
-   //     DrawSettingsEditor(procShape.colourSettings, procShape.OnColourSettingsUpdated, ref procShape.colourSettingsFoldout, ref colourEditor);
+   //    //DrawSettingsEditor(procShape.colourSettings, procShape.OnColourSettingsUpdated, ref procShape.colourSettingsFoldout, ref colourEditor);
 
    // }
 

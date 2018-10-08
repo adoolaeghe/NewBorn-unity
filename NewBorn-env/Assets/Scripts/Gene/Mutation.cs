@@ -18,6 +18,7 @@ public class Mutation    {
     public float strength;
     public int resolution;
     public Vector3 radius;
+    public NoiseSettings.FilterType filterType;
 
 
     public Mutation(string mutationType, int partNb, int axis, float energy, List<Mutation> mutations)
@@ -50,22 +51,15 @@ public class Mutation    {
 			lowAngularXLimit = Random.Range(0f, 20f);
 
             roughness = Random.Range(0.5f, 1f);
-            baseRoughness = Random.Range(0.5f, 4f);
+            baseRoughness = Random.Range(0.5f, 1.5f);
         	strength = Random.Range(0.5f, 1.5f);
 
-            // LOOP OVER THE NUMBER OF NOISE LAYERS
-            for (int i = 0; i < 6; i++)
-            {
-                if (i == 0)
-                {
-                    noiseLayersParams.Add(new NoiseLayerParams(baseRoughness, roughness, 1f, 8, strength, true));
-                }
-                else 
-                {
-                    var nLParam = noiseLayersParams[i - 1];
-                    noiseLayersParams.Add(new NoiseLayerParams(calculateNLParams(nLParam.baseRoughness), calculateNLParams(nLParam.roughness), nLParam.persistence, nLParam.numLayers, nLParam.strength, false));
-                }
-            }
+            noiseLayersParams.Add(new NoiseLayerParams(2.7f, -2.3f, 1f, 8, 0.26f, false, NoiseSettings.FilterType.Ridgid));
+            noiseLayersParams.Add(new NoiseLayerParams(1.3f, -0.04f, 0.55f, 8, 0.08f, true, NoiseSettings.FilterType.Simple));
+            noiseLayersParams.Add(new NoiseLayerParams(1.87f, 0.11f, -0.45f, 8, 1.87f, false, NoiseSettings.FilterType.Simple));
+            noiseLayersParams.Add(new NoiseLayerParams(-0.13f, -0.06f, 0.66f, 8, 1.34f, false, NoiseSettings.FilterType.Ridgid));
+            noiseLayersParams.Add(new NoiseLayerParams(1.84f, 6.34f, 0f, 8, 0.05f, false, NoiseSettings.FilterType.Ridgid));
+            noiseLayersParams.Add(new NoiseLayerParams(0.23f, 0.6f, 0.57f, 4, -0.3f, false, NoiseSettings.FilterType.Simple));
         }
         else 
         {
@@ -79,7 +73,7 @@ public class Mutation    {
 			{
                 var useFirstLayerAsMask = i == 0 ? true : false;
                 var noiseLayersParam = mutations[partNb - 1].noiseLayersParams[i]; 
-				noiseLayersParams.Add(new NoiseLayerParams(noiseLayersParam.baseRoughness,noiseLayersParam.roughness, noiseLayersParam.persistence, noiseLayersParam.numLayers, noiseLayersParam.strength, useFirstLayerAsMask));
+                noiseLayersParams.Add(new NoiseLayerParams(noiseLayersParam.baseRoughness,noiseLayersParam.roughness, noiseLayersParam.persistence, noiseLayersParam.numLayers, noiseLayersParam.strength, useFirstLayerAsMask, noiseLayersParam.filterType));
 			}
             radius = new Vector3(mutations[partNb - 1].radius.x, mutations[partNb - 1].radius.y, mutations[partNb - 1].radius.z);
         }
@@ -87,7 +81,8 @@ public class Mutation    {
 
     float calculateNLParams(float param) {
         // DIVIDE FORMULA
-        return Mathf.Sin(param);
+        //return Mathf.Sin(param);
+        return param + 4;
     }
 }
 
@@ -99,8 +94,8 @@ public class NoiseLayerParams
 	public float strength;
     public int numLayers;
     public bool useFirstLayerAsMask;
-
-	public NoiseLayerParams(float baseRoughness, float roughness, float persistence, int numLayers, float strength, bool useFirstLayerAsMask)
+    public NoiseSettings.FilterType filterType;
+    public NoiseLayerParams(float baseRoughness, float roughness, float persistence, int numLayers, float strength, bool useFirstLayerAsMask, NoiseSettings.FilterType filterType)
 	{
 		this.baseRoughness = baseRoughness;
 		this.roughness = roughness;
@@ -108,5 +103,6 @@ public class NoiseLayerParams
 		this.numLayers = numLayers;
 		this.strength = strength;
         this.useFirstLayerAsMask = useFirstLayerAsMask;
+        this.filterType = filterType;
 	}
 }
