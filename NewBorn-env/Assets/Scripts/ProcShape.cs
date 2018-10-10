@@ -5,7 +5,7 @@ using UnityEngine;
 public class ProcShape : MonoBehaviour {
 
     [Range(2,256)]
-    public int resolution = 20;
+    public int resolution = 50;
     public int[] resolutions;
     public bool autoUpdate = true;
 
@@ -26,15 +26,20 @@ public class ProcShape : MonoBehaviour {
 
     public void Initialize()
     {
-        NoiseLayer[] noiseLayers = new NoiseLayer[2];
+        NoiseLayer[] noiseLayers = new NoiseLayer[6];
         //
         // NEED TO UPDATE THIS 
         noiseLayers[0] = new NoiseLayer();
 		noiseLayers[1] = new NoiseLayer();
+        noiseLayers[2] = new NoiseLayer();
+        noiseLayers[3] = new NoiseLayer();
+        noiseLayers[4] = new NoiseLayer();
+        noiseLayers[5] = new NoiseLayer();
         colourSettings = new ColourSettings();
         //
         //
         shapeSettings = new ShapeSettings(new Vector3(1f, 1f, 1f), noiseLayers);
+
         shapeGenerator.UpdateSettings(shapeSettings);
 		colourGenerator.UpdateSettings(colourSettings);
 
@@ -85,6 +90,11 @@ public class ProcShape : MonoBehaviour {
 			Initialize();
             GenerateColours();   
         }
+    }
+
+    public void UpdateSettings(ShapeSettings shapeSettings)
+    {
+        shapeGenerator.UpdateSettings(shapeSettings);
     }
 
     public void GenerateMesh() {

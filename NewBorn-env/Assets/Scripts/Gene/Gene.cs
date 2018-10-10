@@ -250,10 +250,12 @@ public class Gene : MonoBehaviour
 			shape.shapeSettings.noiseLayers[i].noiseSettings.baseRoughness = noiseLayersParams[i].baseRoughness;
 			shape.shapeSettings.noiseLayers[i].noiseSettings.roughness = noiseLayersParams[i].roughness;
 			shape.shapeSettings.noiseLayers[i].noiseSettings.persistence = noiseLayersParams[i].persistence;
+            shape.shapeSettings.noiseLayers[i].noiseSettings.center = noiseLayersParams[i].centre;
             shape.shapeSettings.noiseLayers[i].noiseSettings.filterType = NoiseSettings.FilterType.Ridgid;
-
+            shape.shapeSettings.noiseLayers[i].useFirstLayerAsMask = noiseLayersParams[i].useFirstLayerAsMask;
         }
-		shape.GenerateMesh();
+        shape.UpdateSettings(shape.shapeSettings);
+        shape.GenerateMesh();
         return shape;
     }
 
