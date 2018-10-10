@@ -9,7 +9,7 @@ public class NoiseSettings {
     public FilterType filterType;
     public float strength = 1;
     [Range(1, 8)]
-    public int numLayers = 1;
+    public int numLayers = 5;
     public float baseRoughness = 2;
     public float roughness = 2;
     public float persistence = .5f;
