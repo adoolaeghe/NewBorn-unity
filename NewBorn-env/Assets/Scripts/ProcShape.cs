@@ -5,7 +5,7 @@ using UnityEngine;
 public class ProcShape : MonoBehaviour {
 
     [Range(2,256)]
-    public int resolution = 20;
+    public int resolution = 150;
     public int[] resolutions;
 
     public ShapeSettings shapeSettings;
@@ -86,7 +86,7 @@ public class ProcShape : MonoBehaviour {
         }
         //////////////////////////////////////////////////////
         /// FILTER THE PEAK/HOLE ANALYSIS FROM MESH GENERATION
-        shapeGenerator.elevationMinMax.filter(4f);
+        shapeGenerator.elevationMinMax.holePeakFilter();
       
 
         foreach (var peak in shapeGenerator.elevationMinMax.peaks)
@@ -94,6 +94,13 @@ public class ProcShape : MonoBehaviour {
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere.transform.parent = gameObject.transform;
             sphere.transform.localPosition = peak;
+        }
+
+        foreach (var hole in shapeGenerator.elevationMinMax.holes)
+        {
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            sphere.transform.parent = gameObject.transform;
+            sphere.transform.localPosition = hole;
         }
         //////////////////////////////////////////////////////
         colourGenerator.UpdateElevation(shapeGenerator.elevationMinMax, transform.position);

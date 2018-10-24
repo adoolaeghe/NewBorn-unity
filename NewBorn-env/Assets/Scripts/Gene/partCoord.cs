@@ -4,8 +4,8 @@ using UnityEngine;
 
 public struct PartCoOrd
 {
-    public Vector3 positionMax;
-    public Vector3 positionMin;
+    public List<Vector3> positionMax;
+    public List<Vector3> positionMin;
     public Vector3 elevationMin;
     public Vector3 elevationMax;
     public Vector3 heading;
@@ -31,12 +31,11 @@ public struct PartCoOrd
     public PartCoOrd(GameObject part, ProcShape shape, Vector3 position, int axis)
     {
         part.transform.localPosition = position;
-        positionMax = shape.shapeGenerator.positionMax;
-        positionMin = shape.shapeGenerator.positionMin;
+        positionMax = shape.shapeGenerator.elevationMinMax.peaks;
+        positionMin = shape.shapeGenerator.elevationMinMax.holes;
         elevationMin = shape.shapeGenerator.elevationMinMax.PosMin;
         elevationMax = shape.shapeGenerator.elevationMinMax.PosMax;
-        positionMin = shape.shapeGenerator.positionMin;
-        heading = (positionMax - positionMin);
+        heading = (positionMax[0] - positionMin[0]);
         distance = heading.magnitude;
         direction = heading / distance;
 

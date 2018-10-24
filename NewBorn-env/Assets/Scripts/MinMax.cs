@@ -45,10 +45,10 @@ public class MinMax {
             float bottomRight = vertices[i].magnitude;
             float bottomLeft = vertices[i - 2].magnitude;
 
-            if (center > left + 0.05f &&
-               center > right + 0.05f &&
-               center > top + 0.05f &&
-               center > bottom + 0.05f) 
+            if (center > left &&
+               center > right &&
+               center > top &&
+               center > bottom) 
             {
                 peaks.Add(vertices[i - resolution - 1]);
             }
@@ -63,52 +63,59 @@ public class MinMax {
         }
     }
 
-    public void filter(float margin) 
+    public void holePeakFilter() 
     {
         List<Vector3> filterPeaks = peaks.OrderByDescending(item => item.magnitude).ToList();
+        List<Vector3> filterHoles = holes.OrderByDescending(item => item.magnitude).ToList();
         List<Vector3> topPeaks = new List<Vector3>();
+        List<Vector3> topHoles = new List<Vector3>();
 
-        float average = 0f;
+        float peakAverage = 0f;
+        float holeAverage = 0f;
 
         peaks.Clear();
-        if (filterPeaks.Count > 0)
+        holes.Clear();
+
+        if (filterPeaks.Count > 0 && filterHoles.Count > 0)
         {
             peaks.Add(filterPeaks[0]);
 
             for (int i = 1; i < filterPeaks.Count; i++)
             {
-                average += filterPeaks[i].magnitude;
+                peakAverage += filterPeaks[i].magnitude;
             }
-            average = average / filterPeaks.Count;
+            for (int i = 1; i < filterHoles.Count; i++)
+            {
+                holeAverage += filterHoles[i].magnitude;
+            }
+
+            peakAverage = peakAverage / filterPeaks.Count;
+            holeAverage = holeAverage / filterHoles.Count;
 
             for (int y = 1; y < filterPeaks.Count; y++)
             {
-                if(filterPeaks[y].magnitude > average) {
+                if(filterPeaks[y].magnitude > peakAverage) {
                     topPeaks.Add(filterPeaks[y]);
                 }
             }
 
-            for (int x = 1; x < 4; x++)
+            for (int y = 1; y < filterHoles.Count; y++)
             {
-                peaks.Add(topPeaks[Random.Range(0, topPeaks.Count)]);
+                if (filterHoles[y].magnitude < holeAverage)
+                {
+                    topHoles.Add(filterHoles[y]);
+                }
             }
-            
+
+            for (int x = 0; x < 4; x++)
+            {
+                peaks.Add(topPeaks[x]);
+                holes.Add(topHoles[x]);
+            }
+
+            peaks = peaks.OrderByDescending(item => item.magnitude).ToList();
+            holes = holes.OrderBy(item => item.magnitude).ToList();
         }
-
-
-        //foreach (var item in peaks)
-        //{
-        //    GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        //    sphere.transform.parent = gameObject.transform;
-        //    sphere.transform.localPosition = item;
-        //}
-
-        //foreach (var item in shapeGenerator.elevationMinMax.holes)
-        //{
-        //    GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //    sphere.transform.parent = gameObject.transform;
-        //    sphere.transform.localPosition = item;
-        //}
     }
 
     public void AddValue(float v, Vector3 position)
