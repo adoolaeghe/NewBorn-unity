@@ -19,7 +19,7 @@ public class NoiseLayerParams
         this.baseRoughness = layerParams[0];
         this.roughness = layerParams[1];
         this.persistence = layerParams[2];
-        this.numLayers = 8;
+        this.numLayers = 1;
         this.strength = layerParams[3];
         this.centre = centre;
         this.useFirstLayerAsMask = useFirstLayerAsMask;

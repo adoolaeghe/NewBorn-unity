@@ -55,20 +55,6 @@ public class Mutation    {
             baseRoughness = Random.Range(0.5f, 1.5f);
         	strength = Random.Range(0.5f, 1.5f);
 
-            //noiseLayersParams.Add(new NoiseLayerParams(0f, -2.3f, 1f, 8, 0.26f, false, NoiseSettings.FilterType.Ridgid));
-            //noiseLayersParams.Add(new NoiseLayerParams(1.3f, -0.04f, 0.55f, 8, 0.08f, true, NoiseSettings.FilterType.Simple));
-            //noiseLayersParams.Add(new NoiseLayerParams(1.87f, 0.11f, -0.45f, 8, 1.87f, false, NoiseSettings.FilterType.Simple));
-            //noiseLayersParams.Add(new NoiseLayerParams(-0.13f, -0.06f, 0.66f, 8, 1.34f, false, NoiseSettings.FilterType.Ridgid));
-            //noiseLayersParams.Add(new NoiseLayerParams(1.84f, 6.34f, 0f, 8, 0.05f, false, NoiseSettings.FilterType.Ridgid));
-            //noiseLayersParams.Add(new NoiseLayerParams(0.23f, 0.6f, 0.57f, 4, -0.3f, false, NoiseSettings.FilterType.Simple));
-
-            //noiseLayersParams.Add(new NoiseLayerParams(0.2f, 1.3f, 1f, 2f, centre, true, NoiseSettings.FilterType.Simple)); // init SHAPE LAYER
-            //noiseLayersParams.Add(new NoiseLayerParams(1f, 1f, 1f, 0.1f, centre, false, NoiseSettings.FilterType.Ridgid)); // init TEXTURE LAYER
-            //noiseLayersParams.Add(new NoiseLayerParams(0.2f, 0.1f, 0.45f, 0.3f, centre, false, NoiseSettings.FilterType.Simple)); // secondary SHAPE LAYER
-            //noiseLayersParams.Add(new NoiseLayerParams(0f, 2f, 0f, 0.005f, centre, false, NoiseSettings.FilterType.Ridgid)); // secondary TEXTURE LAYER
-            //noiseLayersParams.Add(new NoiseLayerParams(0f, 0f, 0f, 0f, centre, false, NoiseSettings.FilterType.Ridgid));
-            //noiseLayersParams.Add(new NoiseLayerParams(0f, 0f, 0f, 0f, centre, false, NoiseSettings.FilterType.Simple));
-
             Vector3 centre = new Vector3(Random.Range(0f, 10f), Random.Range(0f, 10f), Random.Range(0f, 10f));
             LayerParams layerParams = new LayerParams();
 
@@ -92,7 +78,6 @@ public class Mutation    {
 			{
                 var useFirstLayerAsMask = i == 0 ? true : false;
                 var noiseLayersParam = mutations[partNb - 1].noiseLayersParams[i];
-                Debug.Log(noiseLayersParam);
                 noiseLayersParams.Add(new NoiseLayerParams(noiseLayersParam.layerParams, noiseLayersParam.centre, useFirstLayerAsMask, noiseLayersParam.filterType));
 			}
             radius = new Vector3(mutations[partNb - 1].radius.x, mutations[partNb - 1].radius.y, mutations[partNb - 1].radius.z);

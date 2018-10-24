@@ -5,9 +5,8 @@ using UnityEngine;
 public class ProcShape : MonoBehaviour {
 
     [Range(2,256)]
-    public int resolution = 50;
+    public int resolution = 20;
     public int[] resolutions;
-    public bool autoUpdate = true;
 
     public ShapeSettings shapeSettings;
     public ColourSettings colourSettings;
@@ -74,34 +73,29 @@ public class ProcShape : MonoBehaviour {
         GenerateColours();
     }
 
-    public void OnShapeSettingsUpdated() 
-    {
-        if(autoUpdate) 
-        {
-			Initialize();
-            GenerateMesh();   
-        }
-    }
-
-    public void OnColourSettingsUpdated() 
-    {
-        if(autoUpdate)
-        {
-			Initialize();
-            GenerateColours();   
-        }
-    }
-
     public void UpdateSettings(ShapeSettings shapeSettings)
     {
         shapeGenerator.UpdateSettings(shapeSettings);
     }
 
     public void GenerateMesh() {
+
         foreach (TerrainFace face in terrainFaces) 
         {
-            face.ConstructMesh();    
+            face.ConstructMesh();
         }
+        //////////////////////////////////////////////////////
+        /// FILTER THE PEAK/HOLE ANALYSIS FROM MESH GENERATION
+        shapeGenerator.elevationMinMax.filter(4f);
+      
+
+        foreach (var peak in shapeGenerator.elevationMinMax.peaks)
+        {
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.transform.parent = gameObject.transform;
+            sphere.transform.localPosition = peak;
+        }
+        //////////////////////////////////////////////////////
         colourGenerator.UpdateElevation(shapeGenerator.elevationMinMax, transform.position);
     }
 
@@ -111,21 +105,5 @@ public class ProcShape : MonoBehaviour {
             colourGenerator.UpdateColours();    
         }
     }
-
-	void mergeMesh()
-	{
-        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-		int i = 0;
-		while (i < meshFilters.Length)
-		{
-            combine[i].mesh = meshFilters[i].sharedMesh;
-			combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
-            meshFilters[i].gameObject.active = false;
-            i++;
-		}
-        MeshFilter meshFilter = transform.gameObject.AddComponent<MeshFilter>();
-		meshFilter.mesh = new Mesh();
-		meshFilter.mesh.CombineMeshes(combine, true, true);
-		transform.gameObject.active = true;
-	}
+    
 }
