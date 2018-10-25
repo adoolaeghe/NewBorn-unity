@@ -12,6 +12,8 @@ public class MinMax {
     public float Min { get; private set; }
     public float Max { get; private set; }
 
+    public float margin { get; private set; }
+
     public Vector3 PreVal { get; private set; }
     public Vector3 CurVal { get; private set; }
     public Vector3 PostVal { get; private set; }
@@ -32,6 +34,8 @@ public class MinMax {
 
         Min = float.MaxValue;
         Max = float.MinValue;
+
+        margin = 5f;
 
         PreVal = new Vector3(0f, 0f, 0f);
         CurVal = new Vector3(0f, 0f, 0f);
@@ -59,15 +63,25 @@ public class MinMax {
                 bool allow = true;
                 foreach (var peak in peaks)
                 {
-                    if((peak.x < vertices[i - resolution - 1].x - 3f && peak.x > vertices[i - resolution - 1].x + 3f) &&
-                       (peak.y < vertices[i - resolution - 1].y - 3f && peak.y > vertices[i - resolution - 1].y + 3f) &&
-                       (peak.z < vertices[i - resolution - 1].z - 3f && peak.z > vertices[i - resolution - 1].z + 3f))
+                    if((peak.x < vertices[i - resolution - 1].x - margin && peak.x > vertices[i - resolution - 1].x + margin) &&
+                       (peak.y < vertices[i - resolution - 1].y - margin && peak.y > vertices[i - resolution - 1].y + margin) &&
+                       (peak.z < vertices[i - resolution - 1].z - margin && peak.z > vertices[i - resolution - 1].z + margin))
                     {
                         allow = false;
                     }
                 }
 
-                if(allow) {
+                foreach (var hole in holes)
+                {
+                    if ((hole.x < vertices[i - resolution - 1].x - margin && hole.x > vertices[i - resolution - 1].x + margin) &&
+                       (hole.y < vertices[i - resolution - 1].y - margin && hole.y > vertices[i - resolution - 1].y + margin) &&
+                       (hole.z < vertices[i - resolution - 1].z - margin && hole.z > vertices[i - resolution - 1].z + margin))
+                    {
+                        allow = false;
+                    }
+                }
+
+                if (allow) {
                     peaks.Add(vertices[i - resolution - 1]);
                     allowHole = !allowHole;
                     allowPeak = !allowPeak;
@@ -80,66 +94,126 @@ public class MinMax {
                 bottom > center &&
                 allowHole)
             {
-                holes.Add(vertices[i - resolution - 1]);
-                allowHole = !allowHole;
-                allowPeak = !allowPeak;
+                bool allow = true;
+                foreach (var peak in peaks)
+                {
+                    if ((peak.x < vertices[i - resolution - 1].x - margin && peak.x > vertices[i - resolution - 1].x + margin) &&
+                       (peak.y < vertices[i - resolution - 1].y - margin && peak.y > vertices[i - resolution - 1].y + margin) &&
+                       (peak.z < vertices[i - resolution - 1].z - margin && peak.z > vertices[i - resolution - 1].z + margin))
+                    {
+                        allow = false;
+                    }
+                }
+
+                foreach (var hole in holes)
+                {
+                    if ((hole.x < vertices[i - resolution - 1].x - margin && hole.x > vertices[i - resolution - 1].x + margin) &&
+                       (hole.y < vertices[i - resolution - 1].y - margin && hole.y > vertices[i - resolution - 1].y + margin) &&
+                       (hole.z < vertices[i - resolution - 1].z - margin && hole.z > vertices[i - resolution - 1].z + margin))
+                    {
+                        allow = false;
+                    }
+                }
+
+                if(allow) {
+                    holes.Add(vertices[i - resolution - 1]);
+                    allowHole = !allowHole;
+                    allowPeak = !allowPeak;
+                }
             }
         }
     }
 
     public void holePeakFilter() 
     {
-        //List<Vector3> filterPeaks = peaks.OrderByDescending(item => item.magnitude).ToList();
-        //List<Vector3> filterHoles = holes.OrderByDescending(item => item.magnitude).ToList();
-        //List<Vector3> topPeaks = new List<Vector3>();
-        //List<Vector3> topHoles = new List<Vector3>();
+        List<Vector3> filterPeaks = peaks.OrderByDescending(item => item.magnitude).ToList();
+        List<Vector3> filterHoles = holes.OrderBy(item => item.magnitude).ToList();
+        List<Vector3> topPeaks = new List<Vector3>();
+        List<Vector3> topHoles = new List<Vector3>();
 
-        //float peakAverage = 0f;
-        //float holeAverage = 0f;
+        float peakAverage = 0f;
+        float holeAverage = 0f;
 
-        //peaks.Clear();
-        //holes.Clear();
+        peaks.Clear();
+        holes.Clear();
 
-        //if (filterPeaks.Count > 0 && filterHoles.Count > 0)
-        //{
-            //peaks.Add(filterPeaks[0]);
+        if (filterPeaks.Count > 0 && filterHoles.Count > 0)
+        {
 
-            //for (int i = 1; i < filterPeaks.Count; i++)
-            //{
-            //    peakAverage += filterPeaks[i].magnitude;
-            //}
-            //for (int i = 1; i < filterHoles.Count; i++)
-            //{
-            //    holeAverage += filterHoles[i].magnitude;
-            //}
+            for (int i = 0; i < filterPeaks.Count; i++)
+            {
+                peakAverage += filterPeaks[i].magnitude;
+            }
+            for (int i = 0; i < filterHoles.Count; i++)
+            {
+                holeAverage += filterHoles[i].magnitude;
+            }
 
-            //peakAverage = peakAverage / filterPeaks.Count;
-            //holeAverage = holeAverage / filterHoles.Count;
+            peakAverage = peakAverage / filterPeaks.Count;
+            holeAverage = holeAverage / filterHoles.Count;
 
-            //for (int y = 1; y < filterPeaks.Count; y++)
-            //{
-            //    //if(filterPeaks[y].magnitude > peakAverage) {
-            //        peaks.Add(filterPeaks[y]);
-            //    //}
-            //}
+            for (int y = 0; y < filterPeaks.Count; y++)
+            {
+                if(filterPeaks[y].magnitude > peakAverage) {
+                    bool allow = true;
+                    foreach (var peak in filterPeaks)
+                    {
+                        if ((peak.x < filterPeaks[y].x - margin && peak.x > filterPeaks[y].x + margin) &&
+                           (peak.y < filterPeaks[y].y - margin && peak.y > filterPeaks[y].y + margin) &&
+                           (peak.z < filterPeaks[y].z - margin && peak.z > filterPeaks[y].z + margin))
+                        {
+                            allow = false;
+                        }
+                    }
 
-            //for (int y = 1; y < filterHoles.Count; y++)
-            //{
-            //    //if (filterHoles[y].magnitude < holeAverage)
-            //    //{
-            //        holes.Add(filterHoles[y]);
-            //    //}
-            //}
+                    foreach (var hole in filterHoles)
+                    {
+                        if ((hole.x < filterPeaks[y].x - margin && hole.x > filterPeaks[y].x + margin) &&
+                           (hole.y < filterPeaks[y].y - margin && hole.y > filterPeaks[y].y + margin) &&
+                           (hole.z < filterPeaks[y].z - margin && hole.z > filterPeaks[y].z + margin))
+                        {
+                            allow = false;
+                        }
+                    }
 
-            ////for (int x = 0; x < 4; x++)
-            ////{
-            ////    peaks.Add(topPeaks[x]);
-            ////    holes.Add(topHoles[x]);
-            ////}
+                    if(allow) {
+                        peaks.Add(filterPeaks[y]);
+                    }
+                }
+            }
 
-            //peaks = peaks.OrderByDescending(item => item.magnitude).ToList();
-        //    //holes = holes.OrderBy(item => item.magnitude).ToList();
-        //}
+            for (int y = 0; y < filterHoles.Count; y++)
+            {
+                if (filterHoles[y].magnitude < holeAverage)
+                {
+                    bool allow = true;
+                    foreach (var peak in filterPeaks)
+                    {
+                        if ((peak.x < filterHoles[y].x - margin && peak.x > filterHoles[y].x + margin) &&
+                           (peak.y < filterHoles[y].y - margin && peak.y > filterHoles[y].y + margin) &&
+                           (peak.z < filterHoles[y].z - margin && peak.z > filterHoles[y].z + margin))
+                        {
+                            allow = false;
+                        }
+                    }
+
+                    foreach (var hole in filterHoles)
+                    {
+                        if ((hole.x < filterHoles[y].x - margin && hole.x > filterHoles[y].x + margin) &&
+                           (hole.y < filterHoles[y].y - margin && hole.y > filterHoles[y].y + margin) &&
+                           (hole.z < filterHoles[y].z - margin && hole.z > filterHoles[y].z + margin))
+                        {
+                            allow = false;
+                        }
+                    }
+
+                    if (allow)
+                    {
+                        holes.Add(filterHoles[y]);
+                    }
+                }
+            }
+        }
     }
 
     public void AddValue(float v, Vector3 position)

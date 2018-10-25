@@ -96,12 +96,11 @@ public class ProcShape : MonoBehaviour {
             sphere.transform.localPosition = peak;
         }
 
-        foreach (var hole in shapeGenerator.elevationMinMax.holes)
-        {
-            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            sphere.transform.parent = gameObject.transform;
-            sphere.transform.localPosition = hole;
-        }
+       
+        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube.transform.parent = gameObject.transform;
+        cube.transform.localPosition = shapeGenerator.elevationMinMax.PosMin;
+
         //////////////////////////////////////////////////////
         colourGenerator.UpdateElevation(shapeGenerator.elevationMinMax, transform.position);
     }
