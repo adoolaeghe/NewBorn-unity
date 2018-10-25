@@ -21,7 +21,7 @@ public class Mutation    {
     public NoiseSettings.FilterType filterType;
 
 
-    public Mutation(string mutationType, int partNb, int axis, float energy, List<Mutation> mutations)
+    public Mutation(string mutationType, int partNb, List<Mutation> mutations)
     {
         resolution = 20;
         noiseLayersParams = new List<NoiseLayerParams>();
@@ -45,7 +45,7 @@ public class Mutation    {
             //    radiusZ = Random.Range(1f, 4f);
             //}
 
-            radius = new Vector3(radiusX, radiusY, radiusZ) * energy; ;
+            radius = new Vector3(radiusX, radiusY, radiusZ); ;
 		
 			angularYLimit = Random.Range(0f, 30f);
 			highAngularXLimit = Random.Range(10f, 20f);
@@ -67,8 +67,6 @@ public class Mutation    {
         }
         else 
         {
-            // EMPHASIS ON SYMETRY // 
-            // DISTRIBUTION OF ENERGY // 
             axisParts = mutations[partNb - 1].axisParts;
 			angularYLimit = mutations[partNb - 1].angularYLimit;
 			highAngularXLimit = mutations[partNb - 1].highAngularXLimit;

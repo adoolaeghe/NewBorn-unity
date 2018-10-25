@@ -9,9 +9,6 @@ public class Gene : MonoBehaviour
     private List<List<GameObject>> parts;
     private List<List<ProcShape>> shapes;
     private List<List<PartCoOrd>> partCoOrds;
-    private List<List<int>> axis;
-
-    private List<List<float>> energy;
 
     AgentTrainBehaviour aTBehaviour;
 
@@ -23,8 +20,6 @@ public class Gene : MonoBehaviour
 
         // INIT GENE LIST //
         ////////////////////
-        axis = new List<List<int>>();
-        energy = new List<List<float>>();
         mutations = new List<List<Mutation>>();
         parts = new List<List<GameObject>>();
         partCoOrds = new List<List<PartCoOrd>>();
@@ -37,66 +32,31 @@ public class Gene : MonoBehaviour
         ////////////////////////////////INIT BASE PARTS///////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////
         /// 1ST PART ///
-        axis.Add(new List<int>());
-        energy.Add(new List<float>());
         parts.Add(new List<GameObject>());
         shapes.Add(new List<ProcShape>());
         partCoOrds.Add(new List<PartCoOrd>());
         mutations.Add(new List<Mutation>());
-        energy[0].Add(1);
-        axis[0].Add(6);
-        mutations[0].Add(new Mutation("base", 0, axis[0][0], energy[0][0], mutations[0]));
-        basePart(parts[0], mutations[0][0], shapes[0], partCoOrds[0], axis[0][0]);
-
-        /// 2ND PART ///
-        //axis.Add(new List<int>());
-        //energy.Add(new List<float>());
-        //parts.Add(new List<GameObject>());
-        //shapes.Add(new List<ProcShape>());
-        //partCoOrds.Add(new List<PartCoOrd>());
-        //mutations.Add(new List<Mutation>());
-        //energy[1].Add(1);
-        //axis[1].Add(5);
-        //mutations[1].Add(new Mutation("follow", 1, axis[1][0], energy[1][0], mutations[0])); 
-        //basePart(parts[1], mutations[1][0], shapes[1], partCoOrds[1], axis[1][0]);
-        //initRotation(parts[1][0], partCoOrds[0][0].positionMin[0], partCoOrds[1][0].positionMax[0], axis[1][0]);
-        //initJoint(parts[1][0], parts[0][0], partCoOrds[1][0].verticeZMax, partCoOrds[1][0], mutations[1][0].angularYLimit, mutations[1][0].highAngularXLimit, mutations[1][0].lowAngularXLimit);
-
-      
+        mutations[0].Add(new Mutation("base", 0, mutations[0]));
+        basePart(parts[0], mutations[0][0], shapes[0], partCoOrds[0]);
         //////////////////////////////////////////////////////////////////////////////////////
 
 
         //////////////////////////////////////////////////////////////////////////////////////
         /////////////////// Iterate for each new part of the morphology //////////////////////
         /// //////////////////////////////////////////////////////////////////////////////////
-        //for (int i = 1; i < numParts; i++)
-        //{
-        //    for (int y = 0; y < parts.Count; y++)
-        //    {
-        //        energy[y].Add(1);
-        //        float divisionChance = Random.Range(0f, 1f);
-        //        if (divisionChance > energy[y][i] / 2)
-        //        {
-         
-        //            mutations[y].Add(new Mutation("division", i, 3, 0.5f, mutations[y]));
-        //            newPart(parts[y], mutations[y][i], shapes[y], partCoOrds[y], 3, i, false);
-        //            newDuplicatePart(energy, mutations, shapes, partCoOrds, 4, i, y);
-       
-        //        } else {
-        //            mutations[y].Add(new Mutation("follow", i, axis[y][i - 1], energy[y][i], mutations[y]));
-        //            axis[y].Add(axis[y][i - 1]);
-        //            newPart(parts[y], mutations[y][i], shapes[y], partCoOrds[y], axis[y][i], i, false);
-        //        }
-        //    }
-        //}
+        Debug.Log(partCoOrds[0][0].positionMin.Count);
+        foreach (var item in partCoOrds[0][0].positionMax)
+        {
+            Debug.Log("hello");
+        }
         ///////////////////////////////////////////////////////////////////////////////////////
 
         //AddAgentPart(parts, agentParts, numParts);
         ////Post data to Api
         //StartCoroutine(postGene.requestAgent(this));
-	}
+    }
 
-	private void basePart(List<GameObject> parts, Mutation mutation, List<ProcShape> shapes, List<PartCoOrd> partCoOrds, int axis)
+	private void basePart(List<GameObject> parts, Mutation mutation, List<ProcShape> shapes, List<PartCoOrd> partCoOrds)
 	{
 		/////////////////////////////// INIT FIRST BODY PART///////////////////////////////////
 		parts.Add(new GameObject());
@@ -108,7 +68,7 @@ public class Gene : MonoBehaviour
         shapes.Add(initProcShape(parts[0], mutation.resolution, mutation.radius, mutation.noiseLayersParams));
 
 		/////////////////////////////// GET PROC SHAPE COORD ///////////////////////////////////
-		partCoOrds.Add(new PartCoOrd(parts[0], shapes[0], new Vector3(0f, 0f, 0f), axis));
+		partCoOrds.Add(new PartCoOrd(parts[0], shapes[0], new Vector3(0f, 0f, 0f)));
 
 		///////////////////////////////SET LOCAL ROTATION TO 0 //////////////////////////////////
 		parts[0].transform.localRotation = Quaternion.identity;
@@ -121,7 +81,7 @@ public class Gene : MonoBehaviour
 
 	}
 
-	private void newPart(List<GameObject> parts, Mutation mutation, List<ProcShape> shapes, List<PartCoOrd> partCoOrds, int axis, int i, bool divided)
+	private void newPart(List<GameObject> parts, Mutation mutation, List<ProcShape> shapes, List<PartCoOrd> partCoOrds, int i, bool divided)
 	{
         ////////////////////////////////// NEW GAMEOBJECT //////////////////////////////////////
         parts.Add(new GameObject());
@@ -137,7 +97,7 @@ public class Gene : MonoBehaviour
         shapes.Add(initProcShape(parts[i], mutation.resolution, mutation.radius, mutation.noiseLayersParams));
 
         /////////////////////////////// GET PROC SHAPE COORD ///////////////////////////////////
-        partCoOrds.Add(new PartCoOrd(parts[i], shapes[i], new Vector3(0f, 0f, 0f), axis));
+        partCoOrds.Add(new PartCoOrd(parts[i], shapes[i], new Vector3(0f, 0f, 0f)));
 
         //////////////////////////// NEW ROTATION WITH PROC COORD/s//////////////////////////////
         //if (divided)
@@ -146,7 +106,7 @@ public class Gene : MonoBehaviour
         //}
         //else
         //{
-        initRotation(parts[i], partCoOrds[i - 1].positionMin[1], partCoOrds[i].positionMax[1], axis);
+        initRotation(parts[i], partCoOrds[i - 1].positionMin[1], partCoOrds[i].positionMax[1]);
         //}
 
         //
@@ -177,7 +137,7 @@ public class Gene : MonoBehaviour
         return shape;
     }
 
-    private void initRotation(GameObject part, Vector3 min, Vector3 max, int axis)
+    private void initRotation(GameObject part, Vector3 min, Vector3 max)
     {
         part.transform.localPosition = min - max;   
 	}
@@ -232,20 +192,13 @@ public class Gene : MonoBehaviour
         }
     }
 
-    private void newDuplicatePart(List<List<float>> energy, List<List<Mutation>> mutations, List<List<ProcShape>> shapes, List<List<PartCoOrd>> partCoOrds, int axis, int i, int y)
+    private void newDuplicatePart(List<List<Mutation>> mutations, List<List<ProcShape>> shapes, List<List<PartCoOrd>> partCoOrds, int i, int y)
     {
         int z = i + 1;
-        energy[y].Add(0.5f);
-        mutations[y].Add(new Mutation("follow", z, axis, energy[y][z], mutations[y]));
-        newPart(parts[y], mutations[y][z], shapes[y], partCoOrds[y], axis, z, true);
+        
+        mutations[y].Add(new Mutation("follow", z, mutations[y]));
+        newPart(parts[y], mutations[y][z], shapes[y], partCoOrds[y], z, true);
 
-        // ADD PARALLELISM ACCORDING TO THE AXIS
-        if(axis == 1 || axis == 2) {
-            parts[y][i].transform.localScale += new Vector3(-2f, 0f, 0f);
-        } else if (axis == 3 || axis == 4) {
-            parts[y][i].transform.localScale += new Vector3(0f, -2f, 0f);
-        } else {
-            parts[y][i].transform.localScale += new Vector3(0f, 0f, -2f);
-        }
+
     }
 }

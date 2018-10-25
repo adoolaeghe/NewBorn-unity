@@ -8,8 +8,8 @@ public struct PartCoOrd
     public List<Vector3> positionMin;
     public Vector3 elevationMin;
     public Vector3 elevationMax;
-    public Vector3 heading;
-    public Vector3 direction;
+    //public Vector3 heading;
+    //public Vector3 direction;
     public Vector3 jointAxis;
 
     public Vector3 verticeAxisMax;
@@ -26,18 +26,18 @@ public struct PartCoOrd
     private float elevationYMaxB;
     private float elevationZMax;
     private float elevationZMaxB;
-    private float distance;
+    //private float distance;
 
-    public PartCoOrd(GameObject part, ProcShape shape, Vector3 position, int axis)
+    public PartCoOrd(GameObject part, ProcShape shape, Vector3 position)
     {
         part.transform.localPosition = position;
         positionMax = shape.shapeGenerator.elevationMinMax.peaks;
         positionMin = shape.shapeGenerator.elevationMinMax.holes;
         elevationMin = shape.shapeGenerator.elevationMinMax.PosMin;
         elevationMax = shape.shapeGenerator.elevationMinMax.PosMax;
-        heading = (positionMax[0] - positionMin[0]);
-        distance = heading.magnitude;
-        direction = heading / distance;
+        //heading = (positionMax[0] - positionMin[0]);
+        //distance = heading.magnitude;
+        //direction = heading / distance;
 
         elevationXMax = 0f;
         elevationXMaxB = 0f;
@@ -92,35 +92,8 @@ public struct PartCoOrd
             }
         }
 
-        if (axis == 1)
-        {
-            verticeAxisMax = verticeXMax;
-            jointAxis = new Vector3(0f, 0f, -1f);
-        }
-        else if (axis == 2)
-        {
-            verticeAxisMax = verticeXMaxB;
-            jointAxis = new Vector3(0f, 0f, 1f);
-        }
-        else if (axis == 3)
-        {
-            verticeAxisMax = verticeYMax;
-            jointAxis = new Vector3(0f, 0f, -1f);
-        }
-        else if (axis == 4)
-        {
-            verticeAxisMax = verticeYMaxB;
-            jointAxis = new Vector3(1f, 0f, 0f);
-        }
-        else if (axis == 5)
-        {
-            verticeAxisMax = verticeZMax;
-            jointAxis = new Vector3(1f, 0f, 0f);
-        }
-        else if (axis == 6)
-        {
-            verticeAxisMax = verticeZMaxB;
-            jointAxis = new Vector3(-1f, 0f, 0f);
-        }
+        verticeAxisMax = verticeXMax;
+        jointAxis = new Vector3(0f, 0f, -1f);
+
     }
 }
