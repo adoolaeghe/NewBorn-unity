@@ -5,7 +5,7 @@ using UnityEngine;
 public class ProcShape : MonoBehaviour {
 
     [Range(2,256)]
-    public int resolution = 150;
+    public int resolution = 10;
     public int[] resolutions;
 
     public ShapeSettings shapeSettings;

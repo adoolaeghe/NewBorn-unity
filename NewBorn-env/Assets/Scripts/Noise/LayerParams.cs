@@ -13,8 +13,8 @@ public class LayerParams
 
     public LayerParams()
     {
-        float shapeBR = Random.Range(0, 0.1f); float textureBR = Random.Range(0, 2f);
-        float shapeR = Random.Range(0, 0.1f); float textureR = Random.Range(0, 2f);
+        float shapeBR = Random.Range(0, 0.25f); float textureBR = Random.Range(0, 5f);
+        float shapeR = Random.Range(0, 0.25f); float textureR = Random.Range(0, 5f);
         float shapeP = 1f; float textureP = 1f;
         float shapeS = 5f; float textureS = 0.1f;
         // 1/ BaseRoughness 2/ Rougheness 3/ persistence 4/ strength
