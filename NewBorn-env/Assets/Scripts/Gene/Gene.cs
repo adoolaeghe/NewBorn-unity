@@ -44,12 +44,13 @@ public class Gene : MonoBehaviour
         //////////////////////////////////////////////////////////////////////////////////////
         /////////////////// Iterate for each new part of the morphology //////////////////////
         /// //////////////////////////////////////////////////////////////////////////////////
-        Debug.Log(partCoOrds[0][0].positionMin.Count);
-        foreach (var item in partCoOrds[0][0].positionMax)
+        Debug.Log(partCoOrds[0][0].positionMax.Count);
+        for (int i = 1; i < partCoOrds[0][0].positionMax.Count; i++)
         {
-            Debug.Log("hello");
+            mutations[0].Add(new Mutation("follow", i, mutations[0]));
+            newPart(parts[0], mutations[0][i], shapes[0], partCoOrds[0], i);
         }
-        ///////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
 
         //AddAgentPart(parts, agentParts, numParts);
         ////Post data to Api
@@ -78,18 +79,13 @@ public class Gene : MonoBehaviour
         Rigidbody rigidBody = parts[0].gameObject.AddComponent<Rigidbody>();
 		// New collider 
 		initCollider(parts[0]);
-
 	}
 
-	private void newPart(List<GameObject> parts, Mutation mutation, List<ProcShape> shapes, List<PartCoOrd> partCoOrds, int i, bool divided)
+	private void newPart(List<GameObject> parts, Mutation mutation, List<ProcShape> shapes, List<PartCoOrd> partCoOrds, int i)
 	{
         ////////////////////////////////// NEW GAMEOBJECT //////////////////////////////////////
         parts.Add(new GameObject());
-        if(divided){
-            parts[i].transform.parent = parts[i - 2].transform;
-        } else {
-            parts[i].transform.parent = parts[i - 1].transform;
-        }
+        parts[i].transform.parent = parts[0].transform;
         // Add Collider in the same layer group.
         parts[i].layer = 8;
 
@@ -100,16 +96,7 @@ public class Gene : MonoBehaviour
         partCoOrds.Add(new PartCoOrd(parts[i], shapes[i], new Vector3(0f, 0f, 0f)));
 
         //////////////////////////// NEW ROTATION WITH PROC COORD/s//////////////////////////////
-        //if (divided)
-        //{
-        //    initRotation(parts[i], partCoOrds[i - 2], partCoOrds[i], axis);
-        //}
-        //else
-        //{
-        initRotation(parts[i], partCoOrds[i - 1].positionMin[1], partCoOrds[i].positionMax[1]);
-        //}
-
-        //
+        initRotation(parts[i], partCoOrds[0].positionMax[i], partCoOrds[i].positionMin[0]);
 
 		// New collider 
 		initCollider(parts[i]);
@@ -137,14 +124,17 @@ public class Gene : MonoBehaviour
         return shape;
     }
 
-    private void initRotation(GameObject part, Vector3 min, Vector3 max)
+    private void initRotation(GameObject part, Vector3 max, Vector3 min)
     {
-        part.transform.localPosition = min - max;   
-	}
+        //part.transform.localPosition = min - max;
+        //part.transform.LookAt(parts[0][0].transform);
+        part.transform.localPosition = max - min;
+    }
 
     private void initJoint(GameObject part, GameObject connectedBody, Vector3 jointAnchor, PartCoOrd partCoOrd, float angularYLimit, float highAngularXLimit, float lowAngularXlimit)
 	{
         ConfigurableJoint cj = part.transform.gameObject.AddComponent<ConfigurableJoint>();
+        ///////////////////////
         // Configurable Joint Motion 
         cj.xMotion = ConfigurableJointMotion.Locked;
         cj.yMotion = ConfigurableJointMotion.Locked;
@@ -190,15 +180,5 @@ public class Gene : MonoBehaviour
         {
             aTBehaviour.parts.Add(parts[1].transform);
         }
-    }
-
-    private void newDuplicatePart(List<List<Mutation>> mutations, List<List<ProcShape>> shapes, List<List<PartCoOrd>> partCoOrds, int i, int y)
-    {
-        int z = i + 1;
-        
-        mutations[y].Add(new Mutation("follow", z, mutations[y]));
-        newPart(parts[y], mutations[y][z], shapes[y], partCoOrds[y], z, true);
-
-
     }
 }
