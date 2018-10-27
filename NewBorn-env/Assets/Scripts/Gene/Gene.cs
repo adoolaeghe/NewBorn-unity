@@ -7,6 +7,7 @@ public class Gene : MonoBehaviour
 {
     public List<List<Mutation>> mutations;
     private List<List<GameObject>> parts;
+    private List<GameObject> allParts;
     private List<Vector3> partsFull;
 
     AgentTrainBehaviour aTBehaviour;
@@ -21,6 +22,7 @@ public class Gene : MonoBehaviour
         ////////////////////
         mutations = new List<List<Mutation>>();
         parts = new List<List<GameObject>>();
+        allParts = new List<GameObject>();
         partsFull = new List<Vector3>();
         ////////////////////
 
@@ -39,21 +41,21 @@ public class Gene : MonoBehaviour
         /// 1ST PART ///
         parts.Add(new List<GameObject>());
         parts[0].Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        allParts.Add(parts[0][0]);
         parts[0][0].transform.parent = gameObject.transform;
         parts[0][0].transform.localPosition = new Vector3(0f, 0f, 0f);
         partsFull.Add(parts[0][0].transform.position);
         parts[0][0].AddComponent<Rigidbody>();
-        parts[0][0].GetComponent<Rigidbody>().mass = 0.5f;
+        parts[0][0].GetComponent<Rigidbody>().mass = 100f;
         //////////////////////////////////////////////////////////////////////////////////////
 
 
         //////////////////////////////////////////////////////////////////////////////////////
         /////////////////// Iterate for each new part of the morphology //////////////////////
         /// //////////////////////////////////////////////////////////////////////////////////
-        for (int y = 1; y < 35; y++)
+        for (int y = 1; y < 55; y++)
         {
             parts.Add(new List<GameObject>());
-            Debug.Log(parts[y - 1].Count);
             for (int i = 0; i < parts[y-1].Count; i++)
             {
                 for (int z = 0; z < 6; z++)
@@ -73,9 +75,11 @@ public class Gene : MonoBehaviour
                                 parts[y].Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
                                 parts[y][parts[y].Count - 1].transform.parent = parts[y - 1][i].transform;
                                 parts[y][parts[y].Count - 1].transform.localPosition = sides[z];
-                                parts[y][parts[y].Count - 1].AddComponent<Rigidbody>();
-                                parts[y][parts[y].Count - 1].GetComponent<Rigidbody>().mass = 0.5f;
-                             
+                                allParts.Add(parts[y][parts[y].Count - 1]);
+                                //parts[y][parts[y].Count - 1].AddComponent<Rigidbody>();
+                                //parts[y][parts[y].Count - 1].GetComponent<Rigidbody>().mass = 100f;
+
+                                //parts[y][parts[y].Count - 1].GetComponent<Renderer>().material.color = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
                                 initJoint(parts[y][parts[y].Count - 1], parts[y - 1][i], sides[z]);
                             }
                         }
@@ -85,7 +89,7 @@ public class Gene : MonoBehaviour
         }
         //////////////////////////////////////////////////////////////////////////////////////
 
-        //AddAgentPart(parts, agentParts, numParts);
+        AddAgentPart(allParts);
         ////Post data to Api
         //StartCoroutine(postGene.requestAgent(this));
     }
@@ -107,9 +111,9 @@ public class Gene : MonoBehaviour
         cj.yMotion = ConfigurableJointMotion.Locked;
         cj.zMotion = ConfigurableJointMotion.Locked;
         // Configurable Joint Angular Mortion
-        cj.angularXMotion = ConfigurableJointMotion.Locked;
-        cj.angularYMotion = ConfigurableJointMotion.Locked;
-        cj.angularZMotion = ConfigurableJointMotion.Locked;
+        cj.angularXMotion = ConfigurableJointMotion.Limited;
+        cj.angularYMotion = ConfigurableJointMotion.Limited;
+        cj.angularZMotion = ConfigurableJointMotion.Limited;
         // Configurable Joint Connected Body AND Anchor settings
         cj.connectedBody = connectedBody.gameObject.GetComponent<Rigidbody>();
         cj.rotationDriveMode = RotationDriveMode.Slerp;
@@ -123,13 +127,16 @@ public class Gene : MonoBehaviour
         part.gameObject.GetComponent<Rigidbody>().useGravity = true;
     }
 
-    private void AddAgentPart(List<GameObject> parts, List<Transform> agentParts, int partNb)
+    private void AddAgentPart(List<GameObject> agentParts)
 	{
+        GameObject brain = GameObject.Find("/Academy/CrawlerBrain1");
+        brain.GetComponent<Brain>().brainParameters.vectorActionSize = agentParts.Count * 14 + 3;
+        brain.GetComponent<Brain>().brainParameters.vectorObservationSize = agentParts.Count * 14 + 3;
         aTBehaviour = transform.gameObject.GetComponent<AgentTrainBehaviour>();
-        aTBehaviour.initPart = parts[0].transform;
-        for (int i = 0; i < partNb - 1; i++)
+        aTBehaviour.initPart = agentParts[0].transform;
+        for (int i = 1; i < agentParts.Count; i++)
         {
-            aTBehaviour.parts.Add(parts[1].transform);
+            aTBehaviour.parts.Add(agentParts[i].transform);
         }
     }
 }
