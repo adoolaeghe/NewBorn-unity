@@ -259,7 +259,6 @@ public class Noise
 
         // Add contributions from each corner to get the final noise value.
         // The result is scaled to stay just inside [-1,1]
-        Debug.Log((float)(n0 + n1 + n2 + n3) * 32);
 		return (float)(n0 + n1 + n2 + n3) * 32;
 	}
 

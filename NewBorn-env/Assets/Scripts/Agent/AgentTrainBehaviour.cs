@@ -18,6 +18,7 @@ public class AgentTrainBehaviour : Agent
     [Header("Morphology Parts")]
     [Space(10)]
     public int partNb;
+    public float threshold;
     [HideInInspector] public List<Transform> parts;
     [HideInInspector] public Transform initPart;
 
@@ -45,7 +46,7 @@ public class AgentTrainBehaviour : Agent
 		jdController = GetComponent<JointDriveController>();
         gene = GetComponent<Gene>();
 		currentDecisionStep = 1;
-        gene.initParts(partNb, parts);
+        gene.initGerms(partNb, threshold);
         //Setup each morphology part
         jdController.SetupBodyPart(initPart);
         foreach (var part in parts)
@@ -78,30 +79,19 @@ public class AgentTrainBehaviour : Agent
 	public void CollectObservationBodyPart(BodyPart bp)
 	{
 		var rb = bp.rb;
-		AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
-		AddVectorObs(rb.velocity);
-		AddVectorObs(rb.angularVelocity);
 
         if (bp.rb.transform != initPart)
 		{
             Vector3 localPosRelToBody = initPart.InverseTransformPoint(rb.position);
-			AddVectorObs(localPosRelToBody);
-			AddVectorObs(bp.currentXNormalizedRot); // Current x rot
-			AddVectorObs(bp.currentYNormalizedRot); // Current y rot
-			AddVectorObs(bp.currentZNormalizedRot); // Current z rot
-			AddVectorObs(bp.currentStrength / jdController.maxJointForceLimit);
 		}
 	}
 
 	public override void CollectObservations()
 	{
 		jdController.GetCurrentJointForces();
-		// Normalize dir vector to help generalize
+		//// Normalize dir vector to help generalize
 		AddVectorObs(dirToTarget.normalized);
-		// Forward & up to help with orientation
-        AddVectorObs(initPart.transform.position.y);
-        AddVectorObs(initPart.forward);
-        AddVectorObs(initPart.up);
+
 		foreach (var bodyPart in jdController.bodyPartsDict.Values)
 		{
 			CollectObservationBodyPart(bodyPart);
