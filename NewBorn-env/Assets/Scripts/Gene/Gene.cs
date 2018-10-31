@@ -46,15 +46,17 @@ public class Gene : MonoBehaviour
         Germs[0][0].GetComponent<Rigidbody>().mass = 1f;
         // store cell gameobject and position
         Cells.Add(Germs[0][0]);
-        CellPositions.Add(Germs[0][0].transform.position);
+        CellPositions.Add(Germs[0][0].transform.localPosition);
         //////////////////////////////////////////////////////////////////////////////////////
 
 
         //////////////////////////////////////////////////////////////////////////////////////
         /////////////////// Iterate for each new part of the morphology //////////////////////
         /// //////////////////////////////////////////////////////////////////////////////////
+        Debug.Log(numGerms);
         for (int y = 1; y < numGerms; y++)
         {
+            Debug.Log(y);
             int prevCount = Germs[y - 1].Count;
             Germs.Add(new List<GameObject>());
 
@@ -67,9 +69,10 @@ public class Gene : MonoBehaviour
                 for (int z = 0; z < sides.Count; z++)
                 {
 
-                    if(sides[z] != -Germs[y - 1][i].transform.localPosition) {
+                    //if(sides[z] != -Germs[y - 1][i].transform.localPosition) {
                         bool isValid = true;
                         Vector3 cellPosition = Germs[y - 1][i].transform.position + sides[z];
+                        Debug.Log(cellPosition);
 
                         foreach (var position in CellPositions)
                         {
@@ -96,8 +99,12 @@ public class Gene : MonoBehaviour
                                 CellPositions.Add(cellPosition);
                             }
                         }
-                     }
+                     //}
                  }
+            }
+
+            foreach(var cell in Cells) {
+                cell.transform.parent = transform;
             }
         }
         //////////////////////////////////////////////////////////////////////////////////////
