@@ -6,7 +6,10 @@ using MLAgents;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class AgentTrainBehaviour : Agent
 {
-	[Header("Target To Walk Towards")]
+    [Header("Connection to API Service")]
+    public bool requestApiData;
+    public string cellId;
+    [Header("Target To Walk Towards")]
 	[Space(10)]
 	public Transform target;
 
@@ -44,9 +47,18 @@ public class AgentTrainBehaviour : Agent
 	public override void InitializeAgent()
 	{
 		jdController = GetComponent<JointDriveController>();
+        // Handle starting/communication with api data
         gene = GetComponent<Gene>();
-		currentDecisionStep = 1;
-        gene.initGerms(partNb, threshold);
+        if (requestApiData) {
+            PostGene postGene = transform.gameObject.AddComponent<PostGene>();
+            StartCoroutine(postGene.getCell(cellId));
+            gene.partNb = partNb;
+            gene.threshold = threshold;
+        } else {
+            gene.initGerms(partNb, threshold);
+        }
+
+        currentDecisionStep = 1;
         //Setup each morphology part
         jdController.SetupBodyPart(initPart);
         foreach (var part in parts)

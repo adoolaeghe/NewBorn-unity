@@ -6,56 +6,53 @@ using UnityEngine.Networking;
 
 public class PostGene : MonoBehaviour {
     public string response;
-	// Use this for initialization
-
-  //  public IEnumerator requestPart(Mutation mutation, string uuid) {
-		//string url = "https://pnk98uo8jf.execute-api.eu-west-2.amazonaws.com/prod/" + uuid + "/part";
-
-  //      string jsonStringTrial = JsonUtility.ToJson(mutation).ToString();
-
-  //      UnityWebRequest www = UnityWebRequest.Put(url, jsonStringTrial);
-
-		//yield return www.SendWebRequest();
-
-		//if (www.isNetworkError || www.isHttpError)
-		//{
-  //          response = www.downloadHandler.text;
-		//}
-		//else
-		//{
-		//	response = www.downloadHandler.text;
-
-		//}
-    //}
 
 
+    public IEnumerator postCell(string cellInfos)
+	{
+		string url = "https://pnk98uo8jf.execute-api.eu-west-2.amazonaws.com/prod/cell";
 
-	//public IEnumerator requestAgent(Gene gene)
-	//{
-	//	//string url = "https://pnk98uo8jf.execute-api.eu-west-2.amazonaws.com/prod/agent";
+        UnityWebRequest www = UnityWebRequest.Post(url, cellInfos);
 
- // //      UnityWebRequest www = UnityWebRequest.Post(url, "");
- // //      yield return www.SendWebRequest();
+        yield return www.SendWebRequest();
 
-	//	//if (www.isNetworkError || www.isHttpError)
-	//	//{
- // //          Debug.Log("error");
-	//	//}
-	//	//else
-	//	//{
-	//	//	string uuid = www.downloadHandler.text.Trim('"');
-	//	//	url = "https://pnk98uo8jf.execute-api.eu-west-2.amazonaws.com/prod/" + uuid + "/part";
+		if (www.isNetworkError || www.isHttpError)
+		{
+            Debug.Log("error");
+		}
+	}
 
-	//	//	foreach (var mutation in gene.mutations[0])
-	//	//	{
- // //              mutation.uuid = uuid;
-	//	//		string jsonStringTrial = JsonUtility.ToJson(mutation).ToString();
-	//	//		www = UnityWebRequest.Put(url, jsonStringTrial);
-	//	//		yield return www.SendWebRequest();
-	//	//	}
-	//	//}
+    public IEnumerator getCell(string id)
+    {
+      
+        using (UnityWebRequest www = UnityWebRequest.Get("https://pnk98uo8jf.execute-api.eu-west-2.amazonaws.com/prod/cell/" + id))
+        {
+            yield return www.Send();
 
+            if(www.isDone) {
+                string[] textResponse = www.downloadHandler.text.Split('A');
+                for (int i = 1; i < textResponse.Length; i++)
+                {
+                    float val = float.Parse(textResponse[i].Split('"')[0], System.Globalization.CultureInfo.InvariantCulture);
+                    transform.gameObject.GetComponent<Gene>().CellInfos.Add(val);
+                }
+    
+                //transform.gameObject.GetComponent<Gene>().CellInfos;
+                transform.gameObject.GetComponent<Gene>().isRequestDone = true;
+            }
 
+            if (www.isNetworkError || www.isHttpError)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                // Show results as text
+                Debug.Log(www.downloadHandler.text);
 
-	//}
+                // Or retrieve results as binary data
+                byte[] results = www.downloadHandler.data;
+            }
+        }
+    }
 }

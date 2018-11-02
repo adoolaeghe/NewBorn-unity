@@ -5,21 +5,47 @@ using MLAgents;
 
 public class Gene : MonoBehaviour
 {
+    [Header("Connection to API Service")]
+    public bool postApiData;
+    public bool requestApiData;
+
+    [HideInInspector] public bool isRequestDone;
+    [HideInInspector] public float threshold;
+    [HideInInspector] public int partNb;
+    [HideInInspector] public List<float> CellInfos;
+
+    private bool initialised;
     private List<List<GameObject>> Germs;
     private List<GameObject> Cells;
     private List<Vector3> CellPositions;
 
     AgentTrainBehaviour aTBehaviour;
-    
+    void Awake()
+    {
+        initialised = false;
+    }
+
+    void Update()
+    {
+        if(isRequestDone && !initialised){
+            initGerms(partNb, threshold);
+            initialised = true;
+        }
+    }
+
+
+
     public void initGerms(int numGerms, float threshold)
     {
-        PostGene postGene = transform.gameObject.AddComponent<PostGene>() as PostGene;
+        PostGene postGene = new PostGene();
 
         // INIT GENE LIST //
         ////////////////////
         Germs = new List<List<GameObject>>();
         Cells = new List<GameObject>();
         CellPositions = new List<Vector3>();
+        Debug.Log(CellInfos.Count);
+        // TODO IF CELLINFO IS EMPTY DO THIS BLA BLA BLA
         ////////////////////
 
         List<Vector3> sides = new List<Vector3>{
@@ -31,12 +57,13 @@ public class Gene : MonoBehaviour
             new Vector3(0f, 0f, -1f)
         };
 
+
         //////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////INIT BASE GERMS///////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////
         /// 1ST CELL ///
-        // init objedt shape
-        Germs.Add(new List<GameObject>()); 
+        // init object shape
+        Germs.Add(new List<GameObject>());
         Germs[0].Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
         // init position according to parent
         Germs[0][0].transform.parent = gameObject.transform;
@@ -53,10 +80,9 @@ public class Gene : MonoBehaviour
         //////////////////////////////////////////////////////////////////////////////////////
         /////////////////// Iterate for each new part of the morphology //////////////////////
         /// //////////////////////////////////////////////////////////////////////////////////
-        Debug.Log(numGerms);
+        int x = 0;
         for (int y = 1; y < numGerms; y++)
         {
-            Debug.Log(y);
             int prevCount = Germs[y - 1].Count;
             Germs.Add(new List<GameObject>());
 
@@ -68,50 +94,71 @@ public class Gene : MonoBehaviour
                 ////////// ITERATE FOR EACH CELL SIDES ///////////
                 for (int z = 0; z < sides.Count; z++)
                 {
+                    bool isValid = true;
+                    float CellInfo = Random.Range(0f, 1f);
 
-                    //if(sides[z] != -Germs[y - 1][i].transform.localPosition) {
-                        bool isValid = true;
-                        Vector3 cellPosition = Germs[y - 1][i].transform.position + sides[z];
-                        Debug.Log(cellPosition);
+                    if (requestApiData)
+                    {
+                        Debug.Log(CellInfos[x]);
+                        CellInfo = CellInfos[x];
+                        CellInfos.Add(CellInfo);
+                    }
+                    else
+                    {
+                        CellInfos.Add(CellInfo);
+                    }
 
-                        foreach (var position in CellPositions)
+                    Vector3 cellPosition = Germs[y - 1][i].transform.position + sides[z];
+
+                    foreach (var position in CellPositions)
+                    {
+                        if (cellPosition == position)
                         {
-                            if(cellPosition == position) {
-                                isValid = !isValid;
-                            }
+                            isValid = !isValid;
                         }
-                      
-                        if(isValid) {
-                            if(Random.Range(0f, 1f) > threshold) {
-                                // init default shape
-                                Germs[y].Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
-                                GameObject cell = Germs[y][Germs[y].Count - 1];
-                                // init position according to parent
-                                cell.transform.parent = Germs[y - 1][i].transform;
-                                cell.transform.localPosition = sides[z];
-                                // init rigidbody with mass
-                                cell.AddComponent<Rigidbody>();
-                                cell.GetComponent<Rigidbody>().mass = 1f;
-                                // init joint
-                                initJoint(cell, Germs[y - 1][i], sides[z]);
-                                // store cell
-                                Cells.Add(cell);
-                                CellPositions.Add(cellPosition);
-                            }
+                    }
+
+                    if (isValid)
+                    {
+                        if (CellInfos[x] > threshold)
+                        {
+                            // init default shape
+                            Germs[y].Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+                            GameObject cell = Germs[y][Germs[y].Count - 1];
+                            // init position according to parent
+                            cell.transform.parent = Germs[y - 1][i].transform;
+                            cell.transform.localPosition = sides[z];
+                            // init rigidbody with mass
+                            cell.AddComponent<Rigidbody>();
+                            cell.GetComponent<Rigidbody>().mass = 1f;
+                            // init joint
+                            initJoint(cell, Germs[y - 1][i], sides[z]);
+                            // store cell
+                            Cells.Add(cell);
+                            CellPositions.Add(cellPosition);
                         }
-                     //}
-                 }
+                    }
+                    x++;
+                }
             }
 
-            foreach(var cell in Cells) {
+            foreach (var cell in Cells)
+            {
                 cell.transform.parent = transform;
             }
         }
-        //////////////////////////////////////////////////////////////////////////////////////
 
-        AddAgentPart(Cells);
+        //////////////////////////////////////////////////////////////////////////////////////
+        string postData = "";
+        foreach (var info in CellInfos)
+        {
+            postData = postData + 'A' + info.ToString();
+        }
+        AddAgentPart();
+
         ////Post data to Api
-        //StartCoroutine(postGene.requestAgent(this));
+        StartCoroutine(postGene.postCell(postData));
+    
     }
 
     private void initJoint(GameObject part, GameObject connectedBody, Vector3 jointAnchor)
@@ -133,14 +180,14 @@ public class Gene : MonoBehaviour
         //cj.axis = partCoOrd.jointAxis;
         // Configurable Joint Angular Limit
         // Important to have 0 of bounciness
-        cj.angularYLimit = new SoftJointLimit() {limit = 40f, bounciness = 0f };
-        cj.highAngularXLimit = new SoftJointLimit() { limit = 90f, bounciness = 0f };
+        cj.angularYLimit = new SoftJointLimit() { limit = Random.Range(0f, 40f), bounciness = 0f };
+        cj.highAngularXLimit = new SoftJointLimit() { limit = Random.Range(0f, 90f), bounciness = 0f };
         cj.lowAngularXLimit = new SoftJointLimit() { limit = 0f, bounciness = 0f };
         part.gameObject.GetComponent<Rigidbody>().useGravity = true;
     }
 
-    private void AddAgentPart(List<GameObject> Cells)
-	{
+    private void AddAgentPart()
+    {
         aTBehaviour = transform.gameObject.GetComponent<AgentTrainBehaviour>();
         aTBehaviour.initPart = Cells[0].transform;
         for (int i = 1; i < Cells.Count; i++)
