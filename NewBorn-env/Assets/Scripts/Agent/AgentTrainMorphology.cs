@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
+using Gene;
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class AgentTrainMorphology : Agent
@@ -28,7 +29,7 @@ public class AgentTrainMorphology : Agent
 
 	[Header("Joint Settings")] [Space(10)] 
     JointDriveController jdController;
-    Gene gene;
+    Cell cell;
 	Vector3 dirToTarget;
 	float movingTowardsDot;
 	float facingDot;
@@ -58,7 +59,7 @@ public class AgentTrainMorphology : Agent
 	public override void InitializeAgent()
 	{
 		jdController = GetComponent<JointDriveController>();
-        gene = GetComponent<Gene>();
+        cell = GetComponent<Cell>();
 		currentDecisionStep = 1;
         decision = true;
 
