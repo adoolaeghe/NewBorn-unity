@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
+using Gene;
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class AgentTrainBehaviour : Agent
 {
-	[Header("Target To Walk Towards")]
+    [Header("Connection to API Service")]
+    public bool requestApiData;
+    public string cellId;
+    [Header("Target To Walk Towards")]
 	[Space(10)]
 	public Transform target;
 
@@ -39,21 +43,31 @@ public class AgentTrainBehaviour : Agent
 	int currentDecisionStep;
 
     // Gene actor
-    Gene gene;
+    Cell cell;
 
 	public override void InitializeAgent()
 	{
 		jdController = GetComponent<JointDriveController>();
-        gene = GetComponent<Gene>();
-		currentDecisionStep = 1;
-        gene.initGerms(partNb, threshold);
-        //Setup each morphology part
+        // Handle starting/communication with api data
+        cell = GetComponent<Cell>();
+        if (requestApiData) {
+            PostGene postGene = transform.gameObject.AddComponent<PostGene>();
+            StartCoroutine(postGene.getCell(cellId));
+            cell.partNb = partNb;
+            cell.threshold = threshold;
+        } else {
+            cell.initGerms(partNb, threshold);
+        }
+        currentDecisionStep = 1;
+	}
+
+    public void initBodyParts() {
         jdController.SetupBodyPart(initPart);
         foreach (var part in parts)
         {
             jdController.SetupBodyPart(part);
         }
-	}
+    }
 
 	/// <summary>
 	/// We only need to change the joint settings based on decision freq.
@@ -122,6 +136,7 @@ public class AgentTrainBehaviour : Agent
 
 	public override void AgentAction(float[] vectorAction, string textAction)
 	{
+
 		if (detectTargets)
 		{
 			foreach (var bodyPart in jdController.bodyPartsDict.Values)

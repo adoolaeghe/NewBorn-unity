@@ -14,7 +14,7 @@ namespace MLAgents
         // Use this for initialization
         void Start()
         {
-            target = GameObject.Find("Init(Clone)").transform;
+            //target = GameObject.Find("Init(Clone)").transform;
             offset = gameObject.transform.position - target.position;
         }
 
